@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>FireFly+ E-Banking auf einen Blick</title>
+<style>
+  :root {
+    --glass-bg: rgba(255,255,255,0.06);
+    --glass-bg-strong: rgba(255,255,255,0.10);
+    --glass-border: rgba(255,255,255,0.14);
+    --glass-border-strong: rgba(255,255,255,0.22);
+    --glass-blur: blur(28px) saturate(180%);
+    --accent: #0A84FF;
+    --accent-soft: rgba(10,132,255,0.18);
+    --accent-glow: rgba(10,132,255,0.35);
+    --text-primary: rgba(255,255,255,0.95);
+    --text-secondary: rgba(255,255,255,0.55);
+    --text-tertiary: rgba(255,255,255,0.30);
+    --surface: #1C1C1E;
+    --surface-2: #2C2C2E;
+    --bg: #000;
+    --nav-height: 84px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLABLE MAIN ── */
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+  }
+
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 24px);
+    scroll-behavior: smooth;
+  }
+
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* ── HERO HEADER ── */
+  .header {
+    padding: 64px 24px 32px;
+    position: relative;
+  }
+
+  .header-glow {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(ellipse, rgba(10,132,255,0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo-lockup {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  .logo-mark {
+    width: 20px;
+    height: 20px;
+    border-radius: 14px;
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 24px rgba(10,132,255,0.25), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+
+  .logo-mark svg { width: 24px; height: 24px; }
+
+  .logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(145deg, #fff 30%, rgba(255,255,255,0.6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    letter-spacing: 0.2px;
+    padding-left: 62px;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    margin-bottom: 14px;
+    margin-top: 32px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .section-link {
+    font-size: 14px;
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 0 24px;
+  }
+
+  .cards-grid.three-col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* ── GLASS CARD BASE ── */
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), border-color 0.18s;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .glass-card:hover { transform: scale(1.025); border-color: var(--glass-border-strong); }
+  .glass-card:active { transform: scale(0.97); }
+
+  /* ── HERO CARD (full width) ── */
+  .card-hero {
+    grid-column: 1 / -1;
+    padding: 28px;
+    min-height: 160px;
+    background: linear-gradient(135deg, rgba(10,132,255,0.18) 0%, rgba(10,132,255,0.05) 100%);
+    border-color: rgba(10,132,255,0.28);
+  }
+
+  .card-hero .card-glow {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(ellipse, rgba(10,132,255,0.30) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── ACCENT CARD ── */
+  .card-green {
+    background: linear-gradient(135deg, rgba(48,209,88,0.14) 0%, rgba(48,209,88,0.04) 100%);
+    border-color: rgba(48,209,88,0.25);
+  }
+
+  .card-purple {
+    background: linear-gradient(135deg, rgba(191,90,242,0.14) 0%, rgba(191,90,242,0.04) 100%);
+    border-color: rgba(191,90,242,0.25);
+  }
+
+  .card-orange {
+    background: linear-gradient(135deg, rgba(255,159,10,0.14) 0%, rgba(255,159,10,0.04) 100%);
+    border-color: rgba(255,159,10,0.25);
+  }
+
+  .card-red {
+    background: linear-gradient(135deg, rgba(255,69,58,0.14) 0%, rgba(255,69,58,0.04) 100%);
+    border-color: rgba(255,69,58,0.25);
+  }
+
+  .card-teal {
+    background: linear-gradient(135deg, rgba(100,210,255,0.14) 0%, rgba(100,210,255,0.04) 100%);
+    border-color: rgba(100,210,255,0.25);
+  }
+
+  /* ── CARD CONTENT ── */
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .icon-blue { background: rgba(10,132,255,0.22); }
+  .icon-green { background: rgba(48,209,88,0.22); }
+  .icon-purple { background: rgba(191,90,242,0.22); }
+  .icon-orange { background: rgba(255,159,10,0.22); }
+  .icon-red { background: rgba(255,69,58,0.22); }
+  .icon-teal { background: rgba(100,210,255,0.22); }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+  }
+
+  .card-value {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .card-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  .badge-green { background: rgba(48,209,88,0.18); color: #30D158; }
+  .badge-red { background: rgba(255,69,58,0.18); color: #FF453A; }
+  .badge-blue { background: rgba(10,132,255,0.18); color: #0A84FF; }
+  .badge-orange { background: rgba(255,159,10,0.18); color: #FF9F0A; }
+
+  /* ── HORIZONTAL SCROLL CARDS ── */
+  .h-scroll-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 4px 24px 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .h-scroll-wrapper::-webkit-scrollbar { display: none; }
+
+  .h-scroll-inner {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+  }
+
+  .h-card {
+    width: 200px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    padding: 20px;
+  }
+
+  /* ── ACTIVITY ROW ── */
+  .activity-list {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .activity-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s;
+  }
+
+  .activity-row:hover { transform: translateX(3px); border-color: var(--glass-border-strong); }
+  .activity-row:active { transform: scale(0.98); }
+
+  .activity-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .activity-info { flex: 1; min-width: 0; }
+
+  .activity-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .activity-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .activity-meta {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .activity-amount {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .activity-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  /* ── STAT BAR ── */
+  .stat-bar-wrap {
+    padding: 0 24px;
+  }
+
+  .stat-bar-container {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    padding: 20px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.09);
+  }
+
+  .stat-bar-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .stat-bar-name { font-size: 13px; color: var(--text-secondary); }
+  .stat-bar-pct { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+  .bar-track {
+    height: 5px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* ── PAGES (hidden/shown) ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── BOTTOM NAVIGATION ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 0 16px;
+    padding-bottom: calc(var(--safe-bottom) + 10px);
+  }
+
+  .nav-pill {
+    background: rgba(28,28,30,0.72);
+    border: 1px solid var(--glass-border-strong);
+    border-radius: 32px;
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 8px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.08) inset;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 10%, rgba(255,255,255,0.18) 50%, transparent 90%);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 6px 16px;
+    border-radius: 22px;
+    transition: background 0.2s ease;
+    position: relative;
+    flex: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.07); }
+
+  .nav-item.active {
+    background: var(--accent-soft);
+  }
+
+  .nav-icon {
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .nav-item.active .nav-icon { transform: scale(1.12); }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    color: var(--text-tertiary);
+    transition: color 0.15s;
+  }
+
+  .nav-item.active .nav-label {
+    color: var(--accent);
+  }
+
+  .nav-dot {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    width: 6px;
+    height: 6px;
+    background: #FF453A;
+    border-radius: 50%;
+    border: 1.5px solid var(--bg);
+  }
+
+  /* ── SEARCH BAR ── */
+  .search-wrap {
+    padding: 0 24px;
+    align-items: center;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+  }
+
+  .search-bar span:first-child { font-size: 18px; color: var(--text-secondary); }
+
+  .search-bar input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: var(--text-primary);
+    font-family: inherit;
+  }
+
+  .search-bar input::placeholder { color: var(--text-tertiary); }
+
+  /* ── PROFILE PAGE ── */
+  .profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 32px;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(10,132,255,0.5), rgba(191,90,242,0.5));
+    border: 2px solid var(--glass-border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    box-shadow: 0 0 32px rgba(10,132,255,0.3);
+  }
+
+  .profile-name { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+  .profile-role { font-size: 14px; color: var(--text-secondary); }
+
+  .settings-list {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .settings-section {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background 0.14s;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row:hover { background: rgba(255,255,255,0.05); }
+  .settings-row:active { background: rgba(255,255,255,0.03); }
+
+  .settings-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .settings-label { font-size: 15px; font-weight: 500; flex: 1; }
+  .settings-chevron { font-size: 13px; color: var(--text-tertiary); }
+
+  .toggle {
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--accent);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .toggle.off { background: rgba(255,255,255,0.15); }
+  .toggle.off::after { transform: translateX(-18px); }
+
+  /* ── RESPONSIVE ── */
+  @media (min-width: 768px) {
+    .cards-grid { grid-template-columns: repeat(3, 1fr); }
+    .header { padding: 80px 40px 32px; }
+    .section-header, .stat-bar-wrap, .search-wrap, .activity-list, .settings-list { padding-left: 40px; padding-right: 40px; }
+    .h-scroll-wrapper { padding-left: 40px; padding-right: 40px; }
+    .bottom-nav { max-width: 600px; left: 50%; transform: translateX(-50%); }
+  }
+
+  @media (min-width: 1024px) {
+    .cards-grid { grid-template-columns: repeat(4, 1fr); }
+    .bottom-nav { max-width: 500px; }
+    .h-card { width: 220px; }
+  }
+
+  @media (min-width: 1280px) {
+    body { background: #0a0a0a; }
+    .app-shell { max-width: 900px; margin: 0 auto; }
+    .header { padding-top: 56px; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page.active .glass-card,
+  .page.active .activity-row,
+  .page.active .stat-bar-container,
+  .page.active .settings-section {
+    animation: fadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  .page.active .glass-card:nth-child(1) { animation-delay: 0.00s; }
+  .page.active .glass-card:nth-child(2) { animation-delay: 0.04s; }
+  .page.active .glass-card:nth-child(3) { animation-delay: 0.08s; }
+  .page.active .glass-card:nth-child(4) { animation-delay: 0.12s; }
+  .page.active .glass-card:nth-child(5) { animation-delay: 0.16s; }
+  .page.active .glass-card:nth-child(6) { animation-delay: 0.20s; }
+  .page.active .activity-row:nth-child(1) { animation-delay: 0.05s; }
+  .page.active .activity-row:nth-child(2) { animation-delay: 0.10s; }
+  .page.active .activity-row:nth-child(3) { animation-delay: 0.15s; }
+  .page.active .activity-row:nth-child(4) { animation-delay: 0.20s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass-card, .activity-row, .bottom-nav, .nav-item { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- ══════════════ PAGE: HOME ══════════════ -->
+    <div class="page active" id="page-home">
+
+      <!-- Header / Logo -->
+      <div class="header">
+        <div class="header-glow"></div>
+        <div class="logo-lockup">
+<div class="logo-mark">
+  <img width="48px" height="48px" src="logo.png" alt="Logo">
+</div>
+          <span class="logo-text">&nbsp &nbsp &nbsp FireFly+</span>
+        </div>
+        <div class="header-sub">Willkommen zurück!</div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrap" style="margin-bottom:28px;">
+        <div class="search-bar">
+          <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></span>
+          <input type="text" placeholder="Suche…">
+        </div>
+      </div>
+
+      <!-- Main stat cards -->
+      <div class="section-header">
+        <span class="section-title">Übersicht</span>
+        <span class="section-link">Alle →</span>
+      </div>
+
+      <div class="cards-grid" style="margin-bottom: 0;">
+        <!-- Hero card -->
+        <div class="glass-card card-hero">
+          <div class="card-glow"></div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+            <div>
+              <div class="card-sub" style="margin-bottom:6px;">Gesamtvermögen</div>
+              <div class="card-value" style="font-size:34px;">CHF 3.60</div>
+              <div class="card-badge badge-green">▲ +3.2% diese Woche</div>
+            </div>
+            <div class="card-icon icon-blue" style="margin-bottom:0; font-size:22px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem-icon lucide-gem"><path d="M10.5 3 8 9l4 13 4-13-2.5-6"/><path d="M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z"/><path d="M2 9h20"/></svg></div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="glass-card card-green">
+          <div class="card-icon icon-green"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-kanban-icon lucide-square-kanban"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v9"/></svg></div>
+          <div class="card-title">Investitionen</div>
+          <div class="card-value">CHF 0.00</div>
+          <div class="card-badge badge-green">▲ +5.8%</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="glass-card card-red">
+          <div class="card-icon icon-red"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dollar-sign-icon lucide-circle-dollar-sign"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg></div>
+          <div class="card-title">Ausgaben</div>
+          <div class="card-value">CHF 2.60</div>
+          <div class="card-badge badge-red">▼ −2.1%</div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="glass-card card-orange">
+          <div class="card-icon icon-orange"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-icon lucide-bell"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div>
+          <div class="card-title">Benachrichtigungen</div>
+          <div class="card-value">1</div>
+          <div class="card-badge badge-orange">1 ungelesen</div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="glass-card card-teal">
+          <div class="card-icon icon-teal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+          <div class="card-title">Aktivität</div>
+          <div class="card-value">98%</div>
+          <div class="card-sub" style="margin-top:6px;">Letzte 7 Tage</div>
+        </div>
+      </div>
+
+      <!-- Horizontal scroll section -->
+      <div class="section-header">
+        <span class="section-title">Karten</span>
+        <span class="section-link">Alle →</span>
+      </div>
+
+      <div class="h-scroll-wrapper">
+        <div class="h-scroll-inner">
+          <div class="glass-card h-card" style="background:linear-gradient(135deg,rgba(10,132,255,0.20),rgba(10,132,255,0.06)); border-color:rgba(10,132,255,0.28);">
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:16px; letter-spacing:1.5px;">FireFly Debit</div>
+            <div style="font-size:14px; letter-spacing:2px; color:var(--text-secondary); margin-bottom:14px;">•••• •••• •••• 4821</div>
+            <div style="font-size:18px; font-weight:700;">CHF 3.60</div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Limit: € 20.000</div>
+          </div>
+          <div class="glass-card h-card" style="background:linear-gradient(135deg,rgba(191,90,242,0.18),rgba(191,90,242,0.05)); border-color:rgba(191,90,242,0.28);">
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:16px; letter-spacing:1.5px;">FireFly Sparkonto</div>
+            <div style="font-size:14px; letter-spacing:2px; color:var(--text-secondary); margin-bottom:14px;">•••• •••• •••• 9037</div>
+            <div style="font-size:18px; font-weight:700;">CHF 2.00</div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Limit: € 10.000</div>
+          </div>
+          <div class="glass-card h-card" style="background:linear-gradient(135deg,rgba(48,209,88,0.16),rgba(48,209,88,0.04)); border-color:rgba(48,209,88,0.28);">
+            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:16px; letter-spacing:1.5px;">Schwyzer Kantonalbank</div>
+            <div style="font-size:14px; letter-spacing:2px; color:var(--text-secondary); margin-bottom:14px;">IBAN DE89 •••• 2247</div>
+            <div style="font-size:18px; font-weight:700;">CHF 0.10</div>
+            <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">+4.1% p.a.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="section-header">
+        <span class="section-title">Aktivitäten</span>
+        <span class="section-link">Alle →</span>
+      </div>
+
+      <div class="activity-list">
+        <div class="activity-row">
+          <div class="activity-icon icon-blue"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></div>
+          <div class="activity-info">
+            <div class="activity-name">Obertor Kiosk</div>
+            <div class="activity-detail">Obertor Kiosk · Einkauf</div>
+          </div>
+          <div class="activity-meta">
+            <div class="activity-amount" style="color:#FF453A;">−CHF 1.40</div>
+            <div class="activity-time">Heute</div>
+          </div>
+        </div>
+
+        <div class="activity-row">
+          <div class="activity-icon icon-green"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet-icon lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></div>
+          <div class="activity-info">
+            <div class="activity-name">Sendung von +41 76 282 55 19</div>
+            <div class="activity-detail">+41 76 282 55 19 · Geldsendung</div>
+          </div>
+          <div class="activity-meta">
+            <div class="activity-amount" style="color:#30D158;">+CHF 4.20</div>
+            <div class="activity-time">Gestern</div>
+          </div>
+        </div>
+
+        <div class="activity-row">
+          <div class="activity-icon icon-purple"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music-icon lucide-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+          <div class="activity-info">
+            <div class="activity-name">Denner Bremgarten Obertor</div>
+            <div class="activity-detail">Denner GmbH · Einkauf</div>
+          </div>
+          <div class="activity-meta">
+            <div class="activity-amount" style="color:#FF453A;">−CHF 1.20</div>
+            <div class="activity-time">Mo, 23.6.</div>
+          </div>
+        </div>
+
+        <div class="activity-row">
+          <div class="activity-icon icon-orange"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+          <div class="activity-info">
+            <div class="activity-name">Kontoerstellung</div>
+            <div class="activity-detail">FireFly · Prämie</div>
+          </div>
+          <div class="activity-meta">
+            <div class="activity-amount" style="color:#30D158;">+CHF 2.00</div>
+            <div class="activity-time">Sa, 21.6.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bars -->
+      <div class="section-header">
+        <span class="section-title">Budgetübersicht</span>
+      </div>
+
+      <div class="stat-bar-wrap">
+        <div class="stat-bar-container">
+          <div id="bars"></div>
+        </div>
+      </div>
+
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ══════════════ PAGE: EXPLORE ══════════════ -->
+    <div class="page" id="page-explore">
+      <div class="header">
+        <div class="header-glow" style="background:radial-gradient(ellipse, rgba(191,90,242,0.20) 0%, transparent 70%);"></div>
+        <div class="logo-lockup">
+          <div class="logo-mark" style="box-shadow: 0 0 24px rgba(191,90,242,0.25), inset 0 1px 0 rgba(255,255,255,0.18);">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(191,90,242,0.8)" stroke="rgba(191,90,242,0.5)" stroke-width="1"/></svg>
+          </div>
+          <span class="logo-text">Entdecken</span>
+        </div>
+        <div class="header-sub" style="padding-left:62px;">Neue Möglichkeiten für dich</div>
+      </div>
+
+      <div class="section-header"><span class="section-title">Trending</span></div>
+      <div class="cards-grid">
+        <div class="glass-card card-hero" style="background:linear-gradient(135deg,rgba(191,90,242,0.18),rgba(191,90,242,0.05)); border-color:rgba(191,90,242,0.28);">
+          <div class="card-glow" style="background:radial-gradient(ellipse, rgba(191,90,242,0.30) 0%, transparent 70%);"></div>
+          <div class="card-sub" style="margin-bottom:6px;">Empfohlen für dich</div>
+          <div class="card-value" style="font-size:22px;">ETF Welt Portfolio</div>
+          <div class="card-badge badge-blue">Rendite 7.2% p.a.</div>
+        </div>
+        <div class="glass-card card-teal">
+          <div class="card-icon icon-teal">🌍</div>
+          <div class="card-title">Emerging Markets</div>
+          <div class="card-value">+12.1%</div>
+          <div class="card-badge badge-green">Hoch</div>
+        </div>
+        <div class="glass-card card-orange">
+          <div class="card-icon icon-orange">🏠</div>
+          <div class="card-title">Immobilien ETF</div>
+          <div class="card-value">+3.4%</div>
+          <div class="card-badge badge-orange">Mittel</div>
+        </div>
+        <div class="glass-card card-purple">
+          <div class="card-icon icon-purple">₿</div>
+          <div class="card-title">Crypto Mix</div>
+          <div class="card-value">+28.9%</div>
+          <div class="card-badge badge-red">Sehr hoch</div>
+        </div>
+        <div class="glass-card card-green">
+          <div class="card-icon icon-green">🌱</div>
+          <div class="card-title">Green Energy</div>
+          <div class="card-value">+6.1%</div>
+          <div class="card-badge badge-green">Mittel</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon icon-blue">🤖</div>
+          <div class="card-title">KI & Technologie</div>
+          <div class="card-value">+18.3%</div>
+          <div class="card-badge badge-blue">Hoch</div>
+        </div>
+      </div>
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ══════════════ PAGE: ADD ══════════════ -->
+    <div class="page" id="page-add">
+      <div class="header">
+        <div class="header-glow" style="background:radial-gradient(ellipse, rgba(48,209,88,0.20) 0%, transparent 70%);"></div>
+        <div class="logo-lockup">
+          <div class="logo-mark" style="box-shadow: 0 0 24px rgba(48,209,88,0.25), inset 0 1px 0 rgba(255,255,255,0.18);">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#30D158" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <span class="logo-text">Transaktion</span>
+        </div>
+        <div class="header-sub" style="padding-left:62px;">Neue Buchung hinzufügen</div>
+      </div>
+
+      <div style="padding: 0 24px; display: flex; flex-direction: column; gap: 14px;">
+        <div class="stat-bar-container" style="display:flex; flex-direction:column; gap:14px;">
+          <div style="font-size:13px; color:var(--text-secondary);">Betrag</div>
+          <div style="font-size:42px; font-weight:700; letter-spacing:-1px; text-align:center; padding:16px 0; color:var(--text-primary);" contenteditable="true" id="amountInput">€ 0.00</div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:4px;">
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">7</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">8</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">9</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">4</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">5</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">6</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">1</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">2</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">3</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">.</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid var(--glass-border);" onclick="appendNum(this)">0</div>
+            <div style="padding:14px; text-align:center; background:rgba(255,69,58,0.15); border-radius:12px; cursor:pointer; font-size:18px; border:1px solid rgba(255,69,58,0.25);" onclick="clearAmount()">⌫</div>
+          </div>
+        </div>
+        <button onclick="showToast('Transaktion gespeichert ✓')" style="width:100%; padding:18px; background:var(--accent); border:none; border-radius:var(--radius-md); color:white; font-size:16px; font-weight:600; cursor:pointer; font-family:inherit; box-shadow:0 4px 20px rgba(10,132,255,0.35);">Speichern</button>
+      </div>
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ══════════════ PAGE: NOTIFICATIONS ══════════════ -->
+    <div class="page" id="page-notifications">
+      <div class="header">
+        <div class="logo-lockup">
+          <div class="logo-mark" style="box-shadow: 0 0 24px rgba(255,159,10,0.25), inset 0 1px 0 rgba(255,255,255,0.18);">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="rgba(255,159,10,0.8)"/></svg>
+          </div>
+          <span class="logo-text">Hinweise</span>
+        </div>
+        <div class="header-sub" style="padding-left:62px;">3 neue Benachrichtigungen</div>
+      </div>
+
+      <div class="activity-list">
+        <div class="activity-row" style="border-color:rgba(10,132,255,0.25); background:rgba(10,132,255,0.07);">
+          <div class="activity-icon icon-blue">💬</div>
+          <div class="activity-info">
+            <div class="activity-name">Kontolimit bald erreicht</div>
+            <div class="activity-detail">Karte •••4821 ist bei 62% des Limits</div>
+          </div>
+          <div class="activity-time" style="font-size:11px; color:var(--text-tertiary);">Jetzt</div>
+        </div>
+        <div class="activity-row" style="border-color:rgba(48,209,88,0.25); background:rgba(48,209,88,0.07);">
+          <div class="activity-icon icon-green">🎉</div>
+          <div class="activity-info">
+            <div class="activity-name">Sparziel erreicht!</div>
+            <div class="activity-detail">Du hast € 30.000 auf dem Sparkonto</div>
+          </div>
+          <div class="activity-time" style="font-size:11px; color:var(--text-tertiary);">2 Min.</div>
+        </div>
+        <div class="activity-row" style="border-color:rgba(255,159,10,0.25); background:rgba(255,159,10,0.07);">
+          <div class="activity-icon icon-orange">⚠️</div>
+          <div class="activity-info">
+            <div class="activity-name">Ungewöhnliche Aktivität</div>
+            <div class="activity-detail">Zahlung von € 480 in Frankfurt</div>
+          </div>
+          <div class="activity-time" style="font-size:11px; color:var(--text-tertiary);">15 Min.</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-icon" style="background:rgba(255,255,255,0.06); font-size:18px;">📊</div>
+          <div class="activity-info">
+            <div class="activity-name">Wochenbericht bereit</div>
+            <div class="activity-detail">Deine Ausgaben vom 16.–22. Juni</div>
+          </div>
+          <div class="activity-time" style="font-size:11px; color:var(--text-tertiary);">1 Std.</div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-icon" style="background:rgba(255,255,255,0.06); font-size:18px;">🔄</div>
+          <div class="activity-info">
+            <div class="activity-name">Dauerauftrag ausgeführt</div>
+            <div class="activity-detail">Miete Juli: −€ 1.400</div>
+          </div>
+          <div class="activity-time" style="font-size:11px; color:var(--text-tertiary);">Gestern</div>
+        </div>
+      </div>
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ══════════════ PAGE: PROFILE ══════════════ -->
+    <div class="page" id="page-profile">
+      <div class="profile-header">
+        <div class="avatar">👤</div>
+        <div class="profile-name">Vilian Feth</div>
+        <div class="profile-role">Free Plan · Aargau, CH</div>
+      </div>
+
+      <div class="settings-list">
+        <div style="font-size:12px; font-weight:600; color:var(--text-tertiary); letter-spacing:0.8px; margin-bottom:8px; margin-left:4px;">KONTO</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div class="settings-icon icon-blue">👤</div>
+            <div class="settings-label">Persönliche Daten</div>
+            <div class="settings-chevron">›</div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon icon-purple">🔐</div>
+            <div class="settings-label">Sicherheit & Passwort</div>
+            <div class="settings-chevron">›</div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon icon-green">💳</div>
+            <div class="settings-label">Zahlungsmethoden</div>
+            <div class="settings-chevron">›</div>
+          </div>
+        </div>
+
+        <div style="font-size:12px; font-weight:600; color:var(--text-tertiary); letter-spacing:0.8px; margin-bottom:8px; margin-left:4px; margin-top:8px;">EINSTELLUNGEN</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div class="settings-icon icon-orange">🔔</div>
+            <div class="settings-label">Benachrichtigungen</div>
+            <div class="toggle" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon icon-blue">🌙</div>
+            <div class="settings-label">Dark Mode</div>
+            <div class="toggle" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon icon-teal">🌍</div>
+            <div class="settings-label">Sprache & Region</div>
+            <div class="settings-chevron">›</div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon icon-green">♿</div>
+            <div class="settings-label">Barrierefreiheit</div>
+            <div class="settings-chevron">›</div>
+          </div>
+        </div>
+
+        <div style="font-size:12px; font-weight:600; color:var(--text-tertiary); letter-spacing:0.8px; margin-bottom:8px; margin-left:4px; margin-top:8px;">ÜBER</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div class="settings-icon" style="background:rgba(255,255,255,0.07);">📄</div>
+            <div class="settings-label">Datenschutz</div>
+            <div class="settings-chevron">›</div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon" style="background:rgba(255,255,255,0.07);">📋</div>
+            <div class="settings-label">AGB</div>
+            <div class="settings-chevron">›</div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-icon" style="background:rgba(255,255,255,0.07);">ℹ️</div>
+            <div class="settings-label">Version 2.4.1</div>
+            <div style="font-size:13px; color:var(--text-tertiary);">Aktuell</div>
+          </div>
+        </div>
+
+        <button onclick="showToast('Bis bald! 👋')" style="width:100%; padding:16px; background:rgba(255,69,58,0.14); border:1px solid rgba(255,69,58,0.25); border-radius:var(--radius-md); color:#FF453A; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:4px;">Abmelden</button>
+      </div>
+
+      <div style="height:40px;"></div>
+    </div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- ══════════════ BOTTOM NAVIGATION ══════════════ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Hauptnavigation">
+    <div class="nav-pill">
+      <div class="nav-item active" onclick="navigate(this,'home')" aria-label="Home">
+        <div class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" onclick="navigate(this,'explore')" aria-label="Entdecken">
+        <div class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-telescope-icon lucide-telescope"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.747 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z"/><path d="m6.158 8.633 1.114 4.456"/><path d="m8 21 3.105-6.21"/><circle cx="12" cy="13" r="2"/></svg></div>
+        <div class="nav-label">Entdecken</div>
+      </div>
+      <div class="nav-item" onclick="navigate(this,'add')" aria-label="Hinzufügen">
+        <div class="nav-icon" style="font-size:26px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
+        <div class="nav-label">Neu</div>
+      </div>
+      <div class="nav-item" onclick="navigate(this,'notifications')" aria-label="Benachrichtigungen" style="position:relative;">
+        <div class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-icon lucide-bell"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div>
+        <div class="nav-dot"></div>
+        <div class="nav-label">Hinweise</div>
+      </div>
+      <div class="nav-item" onclick="navigate(this,'profile')" aria-label="Profil">
+        <div class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="nav-label">Profil</div>
+      </div>
+    </div>
+  </nav>
+
+<div id="toast"
+style="
+display:none;
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:rgba(28,28,30,0.88);
+border:1px solid var(--glass-border-strong);
+backdrop-filter:blur(24px);
+-webkit-backdrop-filter:blur(24px);
+padding:12px 22px;
+border-radius:40px;
+font-size:14px;
+font-weight:500;
+color:var(--text-primary);
+z-index:999;
+box-shadow:0 4px 24px rgba(0,0,0,0.5);
+pointer-events:none;
+white-space:nowrap;
+"></div>
+
+</div>
+
+<script>
+appData.notifications.unshift({
+    title: "Neue Transaktion",
+    text: "€ " + amount.toFixed(2) + " hinzugefügt",
+    date: new Date().toLocaleString("de-DE")
+});
+
+appData.expenses.unshift({
+    title: "Transaktion",
+    amount: amount,
+    date: new Date().toLocaleString("de-DE")
+});
+
+let appData = JSON.parse(localStorage.getItem("novaData")) || {
+    balance: 0,
+    transactions: [],
+    notifications: [],
+    expenses: []
+};
+
+/* ── NAVIGATION ── */
+function navigate(item, pageId) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  item.classList.add('active');
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+  const page = document.getElementById('page-' + pageId);
+  if (page) page.classList.add('active');
+
+  document.getElementById('scrollArea').scrollTop = 0;
+
+  if (pageId === 'notifications') {
+    const dot = document.querySelector('.nav-dot');
+    if (dot) dot.style.display = 'none';
+  }
+}
+
+/* ── BUDGET BARS ── */
+const bars = [
+  { name:'Lebensmittel', pct:72, color:'#0A84FF' },
+  { name:'Wohnen', pct:55, color:'#30D158' },
+  { name:'Transport', pct:43, color:'#FF9F0A' },
+  { name:'Unterhaltung', pct:88, color:'#BF5AF2' }
+];
+
+const barsEl = document.getElementById('bars');
+
+if (barsEl) {
+  bars.forEach(b => {
+    barsEl.innerHTML += `
+      <div class="stat-bar-label">
+        <span class="stat-bar-name">${b.name}</span>
+        <span class="stat-bar-pct">${b.pct}%</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${b.pct}%; background:${b.color};"></div>
+      </div>
+    `;
+  });
+}
+
+/* ── KONTOSTAND ── */
+let balance = 0;
+let numStr = '';
+
+function updateBalance() {
+  const balanceElement = document.querySelector('.card-hero .card-value');
+
+  if (balanceElement) {
+    balanceElement.textContent =
+      '€ ' +
+      balance.toLocaleString('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  }
+}
+
+updateBalance();
+
+/* ── NUMPAD ── */
+function appendNum(el) {
+  const v = el.textContent.trim();
+
+  if (v === '.') {
+    if (numStr.includes('.')) return;
+  }
+
+  numStr += v;
+
+  document.getElementById('amountInput').textContent =
+    numStr ? '€ ' + numStr : '€ 0.00';
+}
+
+function clearAmount() {
+  numStr = '';
+  document.getElementById('amountInput').textContent = '€ 0.00';
+}
+
+/* ── TRANSAKTION SPEICHERN ── */
+function saveTransaction() {
+    const amount = parseFloat(numStr);
+
+    if (isNaN(amount) || amount <= 0) return;
+
+    appData.balance += amount;
+
+    appData.transactions.unshift({
+        amount: amount,
+        date: new Date().toLocaleString("de-DE")
+    });
+
+    appData.notifications.unshift({
+        title: "Neue Transaktion",
+        text: "€ " + amount.toFixed(2) + " gespeichert",
+        date: new Date().toLocaleString("de-DE")
+    });
+
+    appData.expenses.unshift({
+        title: "Transaktion",
+        amount: amount,
+        date: new Date().toLocaleString("de-DE")
+    });
+
+    saveData();
+
+    renderTransactions();
+    renderNotifications();
+    renderExpenses();
+
+    showToast("Transaktion ausgeführt  ✓");
+}
+
+/* ── BUTTON VERKNÜPFEN ── */
+window.addEventListener('load', () => {
+  const saveBtn = document.querySelector('#page-add button');
+
+  if (saveBtn) {
+    saveBtn.onclick = saveTransaction;
+  }
+});
+
+/* ── TOAST ── */
+let toastTimer;
+
+function showToast(msg) {
+    const toast = document.getElementById("toast");
+
+    toast.textContent = msg;
+    toast.style.display = "block";
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+        toast.style.display = "none";
+    }, 2400);
+}
+</script>
+</body>
+</html>
+
